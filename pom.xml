@@ -28,7 +28,7 @@ under the License.
   </parent>
 
   <artifactId>maven-pmd-plugin</artifactId>
-  <version>3.21.1-SNAPSHOT</version>
+  <version>3.21.1-pmd-7-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven PMD Plugin</name>
@@ -83,7 +83,7 @@ under the License.
   <properties>
     <mavenVersion>3.2.5</mavenVersion>
     <javaVersion>8</javaVersion>
-    <pmdVersion>6.55.0</pmdVersion>
+    <pmdVersion>7.0.0-rc2</pmdVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <aetherVersion>1.0.0.v20140518</aetherVersion>
     <doxiaVersion>1.12.0</doxiaVersion>
