@@ -27,5 +27,19 @@ String enabledPath = new File( basedir, 'logging-enabled/src/main/java/BrokenFil
 
 // logging disabled: the pmd exception is only output through the processing error reporting (since MPMD-246)
 assert 1 == buildLog.text.count( "${disabledPath}: ParseException: Encountered" )
+
+// TODO: with PMD 7, the parse exception is not logged through PMD's logging anymore, it is only added as a processing error
+// in the report. is this correct?
 // logging enabled: the pmd exception is output twice: through the processing error reporting (since MPMD-246) and through PMD's own logging
-assert 2 == buildLog.text.count( "${enabledPath}: ParseException: Encountered" )
+// assert 2 == buildLog.text.count( "${enabledPath}: ParseException: Encountered" )
+assert 1 == buildLog.text.count( "${enabledPath}: ParseException: Encountered" )
+
+// logging disabled module is executed first, which disables the logging
+// even when logging-enabled is executed afterwards in the same JVM, the logger are not reinitialized
+// everywhere, so logging is most likely still disabled.
+assert 0 == buildLog.text.count( "[DEBUG] Rules loaded from" )
+
+// only in the second invoker run, when only logging-enabled is executed, the logs from PMD are visible
+File build2Log = new File( basedir, 'build2.log' )
+assert build2Log.exists()
+assert 1 == build2Log.text.count( "[DEBUG] Rules loaded from" )

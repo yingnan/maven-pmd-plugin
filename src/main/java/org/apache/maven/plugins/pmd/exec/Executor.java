@@ -52,6 +52,19 @@ abstract class Executor {
     private java.util.logging.Logger julLogger;
 
     protected void setupPmdLogging(boolean showPmdLog, String logLevel) {
+
+        // TODO: enabling/disabling the log doesn't work reliably, because
+        // the log level is cached at each logger and the logger instances
+        // are usually static.
+        if (!showPmdLog) {
+            System.setProperty("org.slf4j.simpleLogger.log.net.sourceforge.pmd", "off");
+        } else {
+            System.clearProperty("org.slf4j.simpleLogger.log.net.sourceforge.pmd");
+        }
+        ILoggerFactory slf4jLoggerFactory = LoggerFactory.getILoggerFactory();
+        Slf4jConfiguration slf4jConfiguration = Slf4jConfigurationFactory.getConfiguration(slf4jLoggerFactory);
+        slf4jConfiguration.activate();
+
         if (!showPmdLog) {
             return;
         }
