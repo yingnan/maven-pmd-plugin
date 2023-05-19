@@ -1,5 +1,3 @@
-package def.configuration;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,21 +16,20 @@ package def.configuration;
  * specific language governing permissions and limitations
  * under the License.
  */
+package def.configuration;
 
 /**
  * @author Maria Odea Ching
  */
-public class AppSample
-{
-    private String unusedVar = "UNUSED";
+public class AppSample {
+    private String unusedVar = "UNUSED"; // PMD: UnusedPrivateField (Prio 3)
 
     /**
      * The main method
      *
      * @param args  an array of strings that contains the arguments
      */
-    public static void main( String[] args )
-    {
+    public static void main(String[] args) {
         System.out.println( "Another Sample Application" );
     }
 
@@ -42,36 +39,27 @@ public class AppSample
      * @param notUsedParam
      * @return a blank String
      */
-    private String unusedMethod( String notUsedParam )
-    {
-        System.out.println( "This is just a test." );
-
+    private String unusedMethod(String notUsedParam) { // PMD: UnusedFormalParameter (Prio 3) and UnusedPrivateMethod (Prio 3)
+        System.out.println("This is just a test.");
         return "";
     }
 
-    public String dup( String str )
-    {
+    public String dup(String str) {
         String tmp = "";
 
-        for( int i = 0; i < str.length(); i++ )
-        {
-            if ( i != ( str.length() -1 ) )
-            {
-                tmp = tmp + str.substring( i, i + 1);
-            }
-            else
-            {
-                tmp = tmp + str.substring( i );
+        for (int i = 0; i < str.length(); i++) {
+            if (i != ((str.length() - 1))) { // PMD: UselessParentheses (Prio 4)
+                tmp = tmp + str.substring(i, i + 1);
+            } else {
+                tmp = tmp + str.substring(i);
             }
         }
 
-        if ("".equals( tmp ))
-        {
+        if ("".equals(tmp)) {
                 tmp = "EMPTY";
         }
 
-        System.out.println( "The value of tmp is " + tmp );
+        System.out.println("The value of tmp is " + tmp);
         return tmp;
     }
-
 }

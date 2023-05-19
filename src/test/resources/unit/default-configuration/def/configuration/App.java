@@ -1,5 +1,3 @@
-package def.configuration;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,17 +16,17 @@ package def.configuration;
  * specific language governing permissions and limitations
  * under the License.
  */
+package def.configuration;
 
 /**
  * This is a sample class used for testing
  *
  * @author Maria Odea Ching
  */
-public class App
-{
+public class App  {
     protected String unusedVar1;
 
-    private int unusedVar2; //SUPPRESSME test for the suppressMarker property
+    private int unusedVar2; //SUPPRESSME test for the suppressMarker property - PMD: UnusedPrivateField (Prio 3)
 
     String unusedvar3;
 
@@ -37,9 +35,8 @@ public class App
      *
      * @param args  an array of strings that contains the arguments
      */
-    public static void main( String[] args )
-    {
-        System.out.println( "Sample Application." );
+    public static void main(String[] args) {
+        System.out.println("Sample Application.");
     }
 
     /**
@@ -47,15 +44,10 @@ public class App
      *
      * @param str   the value to be displayed
      */
-    protected void sampleMethod( String str )
-    {
-        try
-        {
-            System.out.println( str );
-        }
-        catch ( Exception e )
-        {
-
+    protected void sampleMethod(String str) {
+        try {
+            System.out.println(str);
+        } catch ( Exception e ) { // PMD: EmptyCatchBlock (Prio 3)
         }
     }
 
@@ -65,35 +57,27 @@ public class App
      * @param unusedParam1
      * @param unusedParam2
      */
-    public void testMethod( String unusedParam1, String unusedParam2)
-    {
+    public void testMethod(String unusedParam1, String unusedParam2) {
         System.out.println( "Test method" );
     }
 
 
-    public String dup( String str )
-    {
+    public String dup(String str) {
         String tmp = "";
 
-        for( int i = 0; i < str.length(); i++ )
-        {
-            if ( i != ( str.length() -1 ) )
-            {
-                tmp = tmp + str.substring( i, i + 1);
-            }
-            else
-            {
-                tmp = tmp + str.substring( i );
+        for (int i = 0; i < str.length(); i++) {
+            if (i != ((str.length() - 1))) { // PMD: UselessParentheses (Prio 4)
+                tmp = tmp + str.substring(i, i + 1);
+            } else {
+                tmp = tmp + str.substring(i);
             }
         }
 
-        if ("".equals( tmp ))
-        {
-                tmp = "EMPTY";
+        if ("".equals(tmp)) {
+            tmp = "EMPTY";
         }
 
-        System.out.println( "The value of tmp is " + tmp );
+        System.out.println("The value of tmp is " + tmp);
         return tmp;
     }
-
 }

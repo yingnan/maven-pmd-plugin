@@ -1,4 +1,3 @@
-package def.configuration;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,16 +16,14 @@ package def.configuration;
  * specific language governing permissions and limitations
  * under the License.
  */
+package def.configuration;
 
-//trigger unused import
-import java.io.File;
+import java.io.File; // PMD: UnnecessaryImport (Prio 4)
+
 /**
  * This is a sample class used for testing
  *
  * @author Maria Odea Ching
  */
-public class App2
-{
-
-  
+public class App2 {
 }

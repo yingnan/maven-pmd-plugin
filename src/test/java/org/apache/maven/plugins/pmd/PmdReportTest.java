@@ -73,9 +73,10 @@ public class PmdReportTest extends AbstractPmdReportTestCase {
         // check if there's a link to the JXR files
         String str = readFile(generatedReport);
 
-        assertTrue(str.contains("/xref/def/configuration/App.html#L31"));
-
-        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L45"));
+        // PMD: UnusedPrivateField (Prio 3)
+        assertTrue(str.contains("/xref/def/configuration/App.html#L29"));
+        // PMD: UnusedFormalParameter (Prio 3) and UnusedPrivateMethod (Prio 3)
+        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L42"));
 
         // check if there's a priority column
         assertTrue(str.contains("<th>Priority</th>"));
@@ -251,9 +252,10 @@ public class PmdReportTest extends AbstractPmdReportTestCase {
         // check if there's a link to the JXR files
         String str = readFile(generatedReport);
 
-        assertTrue(str.contains("/xref/def/configuration/App.html#L31"));
-
-        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L45"));
+        // PMD: UnusedPrivateField (Prio 3)
+        assertTrue(str.contains("/xref/def/configuration/App.html#L29"));
+        // PMD: UnusedFormalParameter (Prio 3) and UnusedPrivateMethod (Prio 3)
+        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L42"));
 
         mockServer.stop();
     }
@@ -452,7 +454,7 @@ public class PmdReportTest extends AbstractPmdReportTestCase {
         // check if there's a link to the JXR files
         str = readFile(generatedReport);
 
-        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L27"));
+        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L25")); // PMD: UnusedPrivateField (Prio 3)
         // suppressed violation
         assertTrue(str.contains("Avoid unused private fields such as 'unusedVar2'."));
     }
@@ -477,7 +479,7 @@ public class PmdReportTest extends AbstractPmdReportTestCase {
         // check if there's a link to the JXR files
         str = readFile(generatedReport);
 
-        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L27"));
+        assertTrue(str.contains("/xref/def/configuration/AppSample.html#L25")); // PMD: UnusedPrivateField (Prio 3)
         // suppressed violations are not rendered
         assertFalse(str.contains("Avoid unused private fields such as 'unusedVar2'."));
     }

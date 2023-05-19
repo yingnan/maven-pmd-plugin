@@ -64,8 +64,8 @@ public class CpdReportTest extends AbstractPmdReportTestCase {
         String str = readFile(generatedReport);
         assertTrue(lowerCaseContains(str, "AppSample.java"));
         assertTrue(lowerCaseContains(str, "App.java"));
-        assertTrue(lowerCaseContains(str, "public String dup( String str )"));
-        assertTrue(lowerCaseContains(str, "tmp = tmp + str.substring( i, i + 1);"));
+        assertTrue(lowerCaseContains(str, "public String dup(String str)"));
+        assertTrue(lowerCaseContains(str, "tmp = tmp + str.substring(i, i + 1);"));
 
         // the version should be logged
         String output = CapturingPrintStream.getOutput();
@@ -171,8 +171,8 @@ public class CpdReportTest extends AbstractPmdReportTestCase {
         String str = readFile(generatedFile);
         assertTrue(lowerCaseContains(str, "AppSample.java"));
         assertTrue(lowerCaseContains(str, "App.java"));
-        assertTrue(lowerCaseContains(str, "public String dup( String str )"));
-        assertTrue(lowerCaseContains(str, "tmp = tmp + str.substring( i, i + 1);"));
+        assertTrue(lowerCaseContains(str, "public String dup(String str)"));
+        assertTrue(lowerCaseContains(str, "tmp = tmp + str.substring(i, i + 1);"));
     }
 
     /**
