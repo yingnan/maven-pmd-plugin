@@ -155,8 +155,8 @@ public class PmdExecutor extends Executor {
 
         PMDConfiguration configuration = new PMDConfiguration();
         LanguageVersion languageVersion = null;
-        Language language = LanguageRegistry.findLanguageByTerseName(
-                request.getLanguage() != null ? request.getLanguage() : "java");
+        Language language =
+                LanguageRegistry.PMD.getLanguageById(request.getLanguage() != null ? request.getLanguage() : "java");
         if (language == null) {
             throw new MavenReportException("Unsupported language: " + request.getLanguage());
         }
@@ -189,9 +189,6 @@ public class PmdExecutor extends Executor {
 
         configuration.setRuleSets(request.getRulesets());
         configuration.setMinimumPriority(RulePriority.valueOf(request.getMinimumPriority()));
-        if (request.getBenchmarkOutputLocation() != null) {
-            configuration.setBenchmark(true);
-        }
         List<File> files = request.getFiles();
 
         Report report = null;
