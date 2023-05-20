@@ -29,77 +29,52 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.SimpleFormatter;
 
+import net.sourceforge.pmd.internal.Slf4jSimpleConfiguration;
 import org.apache.maven.cli.logging.Slf4jConfiguration;
 import org.apache.maven.cli.logging.Slf4jConfigurationFactory;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 abstract class Executor {
     private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
 
     /**
-     * This holds a strong reference in case we configured the logger to
-     * redirect to slf4j. See {@link #showPmdLog}. Without a strong reference,
-     * the logger might be garbage collected and the redirect to slf4j is gone.
+     * Configures the appropriate log levels for PMD or disables
+     * PMD logging.
+     *
+     * @param showPmdLog whether the PMD logs should appear in the maven log output
+     * @param logLevel the maven log level, e.g. "info" or "debug".
      */
-    private java.util.logging.Logger julLogger;
-
     protected void setupPmdLogging(boolean showPmdLog, String logLevel) {
-
-        // TODO: enabling/disabling the log doesn't work reliably, because
-        // the log level is cached at each logger and the logger instances
-        // are usually static.
         if (!showPmdLog) {
             System.setProperty("org.slf4j.simpleLogger.log.net.sourceforge.pmd", "off");
         } else {
             System.clearProperty("org.slf4j.simpleLogger.log.net.sourceforge.pmd");
         }
-        ILoggerFactory slf4jLoggerFactory = LoggerFactory.getILoggerFactory();
-        Slf4jConfiguration slf4jConfiguration = Slf4jConfigurationFactory.getConfiguration(slf4jLoggerFactory);
-        slf4jConfiguration.activate();
 
-        if (!showPmdLog) {
-            return;
-        }
-
-        java.util.logging.Logger logger = java.util.logging.Logger.getLogger("net.sourceforge.pmd");
-
-        boolean slf4jBridgeAlreadyAdded = false;
-        for (Handler handler : logger.getHandlers()) {
-            if (handler instanceof SLF4JBridgeHandler) {
-                slf4jBridgeAlreadyAdded = true;
-                break;
-            }
-        }
-
-        if (slf4jBridgeAlreadyAdded) {
-            return;
-        }
-
-        SLF4JBridgeHandler handler = new SLF4JBridgeHandler();
-        SimpleFormatter formatter = new SimpleFormatter();
-        handler.setFormatter(formatter);
-        logger.setUseParentHandlers(false);
-        logger.addHandler(handler);
-        handler.setLevel(Level.ALL);
-        logger.setLevel(Level.ALL);
-        julLogger = logger;
-        julLogger.fine("Configured jul-to-slf4j bridge for " + logger.getName());
+        // When slf4j-simple is in use, the log level is cached at each logger and the logger
+        // instances are usually static. So they don't see any configuration changes at runtime
+        // normally. This call will go through each logger and reinitialize these with the
+        // freshly determined log level from the configuration.
+        // Note: This only works for slf4j-simple.
+        Slf4jSimpleConfiguration.reconfigureDefaultLogLevel(null);
     }
 
+    /**
+     * Initializes the maven logging system. This is only needed when toolchain is in use. In that
+     * case we fork a new Java process to run PMD.
+     *
+     * @param logLevel the desired log level, e.g. "debug" or "info".
+     */
     protected void setupLogLevel(String logLevel) {
         ILoggerFactory slf4jLoggerFactory = LoggerFactory.getILoggerFactory();
         Slf4jConfiguration slf4jConfiguration = Slf4jConfigurationFactory.getConfiguration(slf4jLoggerFactory);
-        if ("debug".equals(logLevel)) {
+        if ("debug".equalsIgnoreCase(logLevel)) {
             slf4jConfiguration.setRootLoggerLevel(Slf4jConfiguration.Level.DEBUG);
-        } else if ("info".equals(logLevel)) {
+        } else if ("info".equalsIgnoreCase(logLevel)) {
             slf4jConfiguration.setRootLoggerLevel(Slf4jConfiguration.Level.INFO);
         } else {
             slf4jConfiguration.setRootLoggerLevel(Slf4jConfiguration.Level.ERROR);

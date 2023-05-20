@@ -49,6 +49,8 @@ import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.PathTool;
 import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for the PMD reports.
@@ -484,8 +486,17 @@ public abstract class AbstractPmdReport extends AbstractMavenReport {
             logLevel = System.getProperty("maven.logging.root.level");
         }
         if (logLevel == null) {
-            // TODO: logback level
-            logLevel = "info";
+            Logger rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            if (rootLogger.isErrorEnabled()) {
+                logLevel = "error";
+            }
+            if (rootLogger.isInfoEnabled() || rootLogger.isWarnEnabled()) {
+                logLevel = "info";
+            }
+            if (rootLogger.isTraceEnabled() || rootLogger.isDebugEnabled()) {
+                logLevel = "debug";
+            }
+            logLevel = "info"; // default
         }
         return logLevel;
     }

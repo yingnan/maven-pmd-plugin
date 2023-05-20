@@ -17,10 +17,5 @@
  * under the License.
  */
 
-public class BrokenFile
-{
-
-    // This file has a parse error, so PMD will fail to parse it
-    broken!!
-
+public class App {
 }

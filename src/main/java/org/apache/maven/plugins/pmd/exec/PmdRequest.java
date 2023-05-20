@@ -215,7 +215,7 @@ public class PmdRequest implements Serializable {
     }
 
     public boolean isDebugEnabled() {
-        return "debug".equals(logLevel);
+        return "debug".equalsIgnoreCase(logLevel);
     }
 
     public boolean isSkipPmdError() {
