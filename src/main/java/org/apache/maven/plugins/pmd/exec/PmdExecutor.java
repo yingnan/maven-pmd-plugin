@@ -259,7 +259,7 @@ public class PmdExecutor extends Executor {
     private String getErrorsAsString(List<Report.ProcessingError> errors, boolean withDetails) {
         List<String> errorsAsString = new ArrayList<>(errors.size());
         for (Report.ProcessingError error : errors) {
-            errorsAsString.add(error.getFile() + ": " + error.getMsg());
+            errorsAsString.add(error.getFileId().getAbsolutePath() + ": " + error.getMsg());
             if (withDetails) {
                 errorsAsString.add(error.getDetail());
             }

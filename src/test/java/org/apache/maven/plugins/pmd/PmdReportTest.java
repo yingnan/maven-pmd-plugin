@@ -540,12 +540,12 @@ public class PmdReportTest extends AbstractPmdReportTestCase {
         String str = readFile(generatedFile);
         // The parse exception must be in the XML report
         assertTrue(str.contains("ParseException:"));
-        assertTrue(str.contains("Encountered  at line 23, column 5."));
+        assertTrue(str.contains("at line 23, column 5: Encountered"));
 
         str = readFile(generatedReport);
         // The parse exception must also be in the HTML report
         assertTrue(str.contains("ParseException:"));
-        assertTrue(str.contains("Encountered  at line 23, column 5."));
+        assertTrue(str.contains("at line 23, column 5: Encountered"));
     }
 
     public void testPMDProcessingErrorWithDetailsNoReport() throws Exception {
@@ -561,12 +561,12 @@ public class PmdReportTest extends AbstractPmdReportTestCase {
         String str = readFile(generatedFile);
         // The parse exception must be in the XML report
         assertTrue(str.contains("ParseException:"));
-        assertTrue(str.contains("Encountered  at line 23, column 5."));
+        assertTrue(str.contains("at line 23, column 5: Encountered"));
 
         str = readFile(generatedReport);
         // The parse exception must NOT be in the HTML report, since reportProcessingErrors is false
         assertFalse(str.contains("ParseException:"));
-        assertFalse(str.contains("Encountered  at line 23, column 5."));
+        assertFalse(str.contains("at line 23, column 5: Encountered"));
     }
 
     public void testPMDExcludeRootsShouldExcludeSubdirectories() throws Exception {

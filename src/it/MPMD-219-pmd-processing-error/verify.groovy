@@ -20,5 +20,5 @@
 File buildLog = new File( basedir, 'build.log' )
 assert buildLog.exists()
 assert buildLog.text.contains( "PMD processing errors" )
-assert buildLog.text.contains( "BrokenFile.java: ParseException: Parse exception in file")
+assert buildLog.text.contains( "BrokenFile.java: ParseException: Parse exception in file" )
 assert buildLog.text.contains( "Encountered" )
