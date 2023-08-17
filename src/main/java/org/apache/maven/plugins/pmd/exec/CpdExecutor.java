@@ -25,21 +25,19 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Objects;
 
-import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.CPDReport;
+import net.sourceforge.pmd.cpd.CPDReportRenderer;
 import net.sourceforge.pmd.cpd.CSVRenderer;
-import net.sourceforge.pmd.cpd.EcmascriptLanguage;
-import net.sourceforge.pmd.cpd.JSPLanguage;
-import net.sourceforge.pmd.cpd.JavaLanguage;
-import net.sourceforge.pmd.cpd.Language;
-import net.sourceforge.pmd.cpd.LanguageFactory;
+import net.sourceforge.pmd.cpd.CpdAnalysis;
 import net.sourceforge.pmd.cpd.SimpleRenderer;
 import net.sourceforge.pmd.cpd.XMLRenderer;
-import net.sourceforge.pmd.cpd.renderer.CPDReportRenderer;
+import net.sourceforge.pmd.lang.Language;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.pmd.ExcludeDuplicationsFromFile;
 import org.apache.maven.reporting.MavenReportException;
@@ -153,58 +151,61 @@ public class CpdExecutor extends Executor {
         CPDConfiguration cpdConfiguration = new CPDConfiguration();
         cpdConfiguration.setMinimumTileSize(request.getMinimumTokens());
 
-        Language cpdLanguage;
-        if ("java".equals(request.getLanguage()) || null == request.getLanguage()) {
-            cpdLanguage = new JavaLanguage(request.getLanguageProperties());
-        } else if ("javascript".equals(request.getLanguage())) {
-            cpdLanguage = new EcmascriptLanguage();
-        } else if ("jsp".equals(request.getLanguage())) {
-            cpdLanguage = new JSPLanguage();
-        } else {
-            cpdLanguage = LanguageFactory.createLanguage(request.getLanguage(), request.getLanguageProperties());
+        String language = request.getLanguage();
+        if (language == null) {
+            language = "java";
         }
+        if ("javascript".equalsIgnoreCase(language)) {
+            language = "ecmascript";
+        }
+        Language cpdLanguage = cpdConfiguration.getLanguageRegistry().getLanguageById(language);
 
-        cpdConfiguration.setLanguage(cpdLanguage);
-        cpdConfiguration.setSourceEncoding(request.getSourceEncoding());
+        cpdConfiguration.setOnlyRecognizeLanguage(cpdLanguage);
+        cpdConfiguration.setSourceEncoding(Charset.forName(request.getSourceEncoding()));
 
-        CPD cpd = new CPD(cpdConfiguration);
-        try {
-            cpd.add(request.getFiles());
+        cpdConfiguration.setIgnoreAnnotations(request.isIgnoreAnnotations());
+        cpdConfiguration.setIgnoreLiterals(request.isIgnoreLiterals());
+        cpdConfiguration.setIgnoreIdentifiers(request.isIgnoreIdentifiers());
+
+        try (CpdAnalysis cpd = CpdAnalysis.create(cpdConfiguration)) {
+            for (File file : request.getFiles()) {
+                cpd.files().addFile(file.toPath());
+            }
+            LOG.debug("Executing CPD...");
+            cpd.performAnalysis(cpdReport -> {
+                LOG.debug("CPD finished.");
+
+                // always create XML format. we need to output it even if the file list is empty or we have no
+                // duplications so the "check" goals can check for violations
+                writeXmlReport(cpdReport);
+
+                // html format is handled by maven site report, xml format has already been rendered
+                String format = request.getFormat();
+                if (!"html".equals(format) && !"xml".equals(format)) {
+                    writeFormattedReport(cpdReport);
+                }
+            });
         } catch (IOException e) {
             throw new MavenReportException(e.getMessage(), e);
-        }
-
-        LOG.debug("Executing CPD...");
-        cpd.go();
-        LOG.debug("CPD finished.");
-
-        // always create XML format. we need to output it even if the file list is empty or we have no duplications
-        // so the "check" goals can check for violations
-        writeXmlReport(cpd);
-
-        // html format is handled by maven site report, xml format has already been rendered
-        String format = request.getFormat();
-        if (!"html".equals(format) && !"xml".equals(format)) {
-            writeFormattedReport(cpd);
         }
 
         return new CpdResult(new File(request.getTargetDirectory(), "cpd.xml"), request.getOutputEncoding());
     }
 
-    private void writeXmlReport(CPD cpd) throws MavenReportException {
-        File targetFile = writeReport(cpd, new XMLRenderer(request.getOutputEncoding()), "xml");
+    private void writeXmlReport(CPDReport cpdReport) {
+        File targetFile = writeReport(cpdReport, new XMLRenderer(request.getOutputEncoding()), "xml");
         if (request.isIncludeXmlInSite()) {
             File siteDir = new File(request.getReportOutputDirectory());
             siteDir.mkdirs();
             try {
                 FileUtils.copyFile(targetFile, new File(siteDir, "cpd.xml"));
             } catch (IOException e) {
-                throw new MavenReportException(e.getMessage(), e);
+                throw new UncheckedIOException(e);
             }
         }
     }
 
-    private File writeReport(CPD cpd, CPDReportRenderer r, String extension) throws MavenReportException {
+    private File writeReport(CPDReport cpdReport, CPDReportRenderer r, String extension) {
         if (r == null) {
             return null;
         }
@@ -213,26 +214,26 @@ public class CpdExecutor extends Executor {
         targetDir.mkdirs();
         File targetFile = new File(targetDir, "cpd." + extension);
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile), request.getOutputEncoding())) {
-            r.render(filterMatches(cpd.toReport()), writer);
+            r.render(filterMatches(cpdReport), writer);
             writer.flush();
         } catch (IOException ioe) {
-            throw new MavenReportException(ioe.getMessage(), ioe);
+            throw new UncheckedIOException(ioe);
         }
         return targetFile;
     }
 
-    private void writeFormattedReport(CPD cpd) throws MavenReportException {
+    private void writeFormattedReport(CPDReport cpdReport) {
         CPDReportRenderer r = createRenderer(request.getFormat(), request.getOutputEncoding());
-        writeReport(cpd, r, request.getFormat());
+        writeReport(cpdReport, r, request.getFormat());
     }
 
     /**
      * Create and return the correct renderer for the output type.
      *
      * @return the renderer based on the configured output
-     * @throws org.apache.maven.reporting.MavenReportException if no renderer found for the output type
+     * @throws RuntimeExceptionn if no renderer found for the output type
      */
-    public static CPDReportRenderer createRenderer(String format, String outputEncoding) throws MavenReportException {
+    public static CPDReportRenderer createRenderer(String format, String outputEncoding) {
         CPDReportRenderer renderer = null;
         if ("xml".equals(format)) {
             renderer = new XMLRenderer(outputEncoding);
@@ -245,7 +246,7 @@ public class CpdExecutor extends Executor {
                 renderer = (CPDReportRenderer)
                         Class.forName(format).getConstructor().newInstance();
             } catch (Exception e) {
-                throw new MavenReportException(
+                throw new RuntimeException(
                         "Can't find CPD custom format " + format + ": "
                                 + e.getClass().getName(),
                         e);

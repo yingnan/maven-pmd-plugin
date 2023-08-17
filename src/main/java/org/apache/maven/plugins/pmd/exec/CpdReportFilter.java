@@ -22,7 +22,7 @@ import net.sourceforge.pmd.cpd.Match;
 import net.sourceforge.pmd.util.Predicate;
 import org.apache.maven.plugins.pmd.ExcludeDuplicationsFromFile;
 
-class CpdReportFilter implements Predicate<Match> {
+class CpdReportFilter implements Predicate<Match>, java.util.function.Predicate<Match> {
     private final ExcludeDuplicationsFromFile excludeDuplicationsFromFile;
     private int excludedDuplications = 0;
 

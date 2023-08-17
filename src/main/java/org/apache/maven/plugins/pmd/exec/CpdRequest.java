@@ -54,6 +54,10 @@ public class CpdRequest implements Serializable {
     private boolean includeXmlInSite;
     private String reportOutputDirectory;
 
+    private boolean ignoreLiterals;
+    private boolean ignoreIdentifiers;
+    private boolean ignoreAnnotations;
+
     public void setJavaExecutable(String javaExecutable) {
         this.javaExecutable = javaExecutable;
     }
@@ -164,5 +168,29 @@ public class CpdRequest implements Serializable {
 
     public String getLogLevel() {
         return logLevel;
+    }
+
+    public boolean isIgnoreLiterals() {
+        return ignoreLiterals;
+    }
+
+    public void setIgnoreLiterals(boolean ignoreLiterals) {
+        this.ignoreLiterals = ignoreLiterals;
+    }
+
+    public boolean isIgnoreIdentifiers() {
+        return ignoreIdentifiers;
+    }
+
+    public void setIgnoreIdentifiers(boolean ignoreIdentifiers) {
+        this.ignoreIdentifiers = ignoreIdentifiers;
+    }
+
+    public boolean isIgnoreAnnotations() {
+        return ignoreAnnotations;
+    }
+
+    public void setIgnoreAnnotations(boolean ignoreAnnotations) {
+        this.ignoreAnnotations = ignoreAnnotations;
     }
 }

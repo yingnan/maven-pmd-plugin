@@ -27,6 +27,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -172,7 +173,7 @@ public class PmdExecutor extends Executor {
         configuration.setDefaultLanguageVersion(languageVersion);
 
         if (request.getSourceEncoding() != null) {
-            configuration.setSourceEncoding(request.getSourceEncoding());
+            configuration.setSourceEncoding(Charset.forName(request.getSourceEncoding()));
         }
 
         configuration.prependAuxClasspath(request.getAuxClasspath());
