@@ -60,10 +60,10 @@ under the License.
   </prerequisites>
 
   <scm>
-    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-pmd-plugin.git</connection>
-    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-pmd-plugin.git</developerConnection>
+    <connection>scm:git:https://github.com/yingnan/maven-pmd-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/yingnan/maven-pmd-plugin.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://github.com/apache/maven-pmd-plugin/tree/${project.scm.tag}</url>
+    <url>https://github.com/yingnan/maven-pmd-plugin/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
     <system>JIRA</system>
@@ -74,10 +74,18 @@ under the License.
     <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-pmd-plugin/</url>
   </ciManagement>
   <distributionManagement>
-    <site>
-      <id>apache.website</id>
-      <url>scm:svn:https://svn.apache.org/repos/asf/maven/website/components/${maven.site.path}</url>
-    </site>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>wholesail-releases</id>
+      <name>wholesail-releases</name>
+      <url>https://nexus.paywholesail.com/repository/wholesail-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>wholesail-snapshots</id>
+      <name>wholesail-snapshots</name>
+      <url>https://nexus.paywholesail.com/repository/wholesail-snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <properties>
